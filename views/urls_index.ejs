@@ -8,11 +8,17 @@
     <h2>Example urls and their shortened forms:</h2>
     <ul>
     <% for (i in urls) {%>
-    <li><%= urls[i] %> - <%= i %> </li>
+    <li><%= urls[i] %> - <%= i %>  -    <form method="POST" action="/urls/<%= i %>/delete">
+    <input type ="submit" value="Delete"></input> <br />
+    <a href="/urls/<%= i %>">Edit</a>
+    </li>
     <% } %>
     </ul>
+
+
+    </form>
     <p>Have a link you want to shorten? Click on the link below!</p>
-    <a href = "urls_new">short.en</a>
+    <a href = "http://localhost:8080/urls/new">short.en</a>
     <!-- Add your EJS code here -->
 </body>
 </html>
