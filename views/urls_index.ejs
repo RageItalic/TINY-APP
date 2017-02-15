@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>TinyApp</title>
+</head>
+<body>
+    <% include partials/_header.ejs %>
+    <h2>Example urls and their shortened forms:</h2>
+    <ul>
+    <% for (i in urls) {%>
+    <li><%= urls[i] %> - <%= i %> </li>
+    <% } %>
+    </ul>
+    <p>Have a link you want to shorten? Click on the link below!</p>
+    <a href = "urls_new">short.en</a>
+    <!-- Add your EJS code here -->
+</body>
+</html>
