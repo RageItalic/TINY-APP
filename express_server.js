@@ -53,7 +53,7 @@ var urlDatabase = {
 };
 
 app.get("/", (req, res) => {
-  res.redirect("urls_new");
+  res.end("Hello");
 });
 
 app.get("/urls", (req, res) => {
@@ -119,13 +119,52 @@ app.post("/urls/:id/update", (req, res) => {
 
 app.post("/login", (req, res) =>{
   res.cookie('username', req.body.username);
-  console.log('this', req.body.username);
-  if(req.body.username){
-    res.redirect("/urls/new")
+  //console.log('this', req.body.username);
+  let email = req.body.username;
+  if(users[email]){
+    console.log(users[email]);
+    if(req.body.password === users[email].password){
+      console.log("password matched");
+      res.redirect("/")
+    }
+    else{
+      console.log("password does not match");
+      res.status(403).send("The password you entered does not match.")
+    }
   }
   else{
-    res.redirect("/register")
+    console.log("user does not exist");
+    res.status(403).send("The email you entered does not match.")
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //if(req.body.username){
+
+    //res.redirect("/urls/new")
+  //}
+  //else{
+    //res.status(403).send("The email you entered cannot be found. Try registering <a href='/register'> here. </a>")
+    //res.redirect("/login")
+  //}
   //console.log(req.body.username + "****************************THIS ONE********************");
 
 
@@ -145,13 +184,13 @@ app.post("/register", (req, res) => {
     let message = {message: "email and/or password can't be empty. D'uh."}
     res.render("urls_register", message);
   }
-  // else{
-  //   if(userEMAIL){
-  //     res.statusCode = 400;
-  //     res.render("/register")
-  //   }
-  //   res.redirect("/urls/new")
-  // }
+  else{
+     if(userEMAIL){
+       res.status(400).send("This email already exists. Try logging in <a href='/login'> here. </a>");
+       //res.render("/register")
+     }
+     res.redirect("/urls/new")
+   }
   users[userEMAIL] = {
     id: userID,
     email: userEMAIL,
