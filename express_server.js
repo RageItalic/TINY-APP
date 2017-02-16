@@ -2,6 +2,10 @@ var express = require("express");
 var app = express();
 var PORT = process.env.PORT || 8080; // default port 8080
 
+var cookieParser = require('cookie-parser');
+var app = express()
+app.use(cookieParser())
+
 app.set("view engine", "ejs");
 
 const bodyParser = require("body-parser");
@@ -25,26 +29,30 @@ var urlDatabase = {
   "8qp9PO": "http://www.youtube.com"
 };
 
-//app.get("/", (req, res) => {
-  //res.end("Hello!");
-//});
-
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
+app.get("/", (req, res) => {
+  res.redirect("urls_new");
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = { urls: urlDatabase, username: req.cookies.username };
   res.render("urls_index", templateVars);
 })
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id] };
+  let templateVars = {
+    shortURL: req.params.id,
+    longURL: urlDatabase[req.params.id],
+    username: req.cookies.username
+     };
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id] };
+  let templateVars = {
+    shortURL: req.params.id,
+    longURL: urlDatabase[req.params.id],
+    username: req.cookies.username
+     };
   res.render("urls_show", templateVars)
 })
 
@@ -61,7 +69,7 @@ app.post("/urls", (req, res) => {
   console.log(longURL);
   urlDatabase[o] = longURL;
   console.log(urlDatabase);
-  res.render("urls_show", {'longURL':longURL, 'shortURL':o});
+  res.redirect("/urls/" + o);
   //console.log(req.body);  // debug statement to see POST parameters
   //res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
@@ -76,6 +84,18 @@ app.post("/urls/:id/update", (req, res) => {
   let longURL = req.body.longURL;
   urlDatabase[req.params.id] = longURL;
   res.redirect("/urls")
+})
+
+app.post("/login", (req, res) =>{
+  res.cookie('username', req.body.username);
+  //console.log(req.body.username + "****************************THIS ONE********************");
+  res.redirect("urls/new")
+
+})
+
+app.post("/logout", (req, res) => {
+res.clearCookie('username');
+res.redirect("/urls/new")
 })
 
 app.listen(PORT, '0.0.0.0', () => {

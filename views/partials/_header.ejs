@@ -4,5 +4,16 @@
 </head>
 <body>
 <h1>Short.en</h1>
+<%  if (username){ %>
+<form method="POST" action="/logout">
+<input type="submit" value="Logout"></input>
+</form>
+<% } else { %>
+<form method="POST" action="/login">
+  <input type="text" name="username"></input>
+  <input type="submit" value="submit"></input>
+</form>
+<% } %>
+<%= username %>
 </body>
 </html>
