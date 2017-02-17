@@ -23,22 +23,22 @@ function generateRandomString() {
 }
 
 var users = {
-  "user@example.com": {
+  "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
     password: "purple-monkey-dinosaur"
   },
- "user2@example.com": {
+ "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
     password: "dishwasher-funk"
   },
-  "user3@example.com": {
+  "user3RandomID": {
     id: "user3RandomID",
     email: "user3@example.com",
     password: "tatti"
   },
-  "user4@example.com": {
+  "user4RandomID": {
     id: "user4RandomID",
     email: "user4@example.com",
     password: "kamine"
@@ -52,20 +52,33 @@ var urlDatabase = {
   "8qp9PO": "http://www.youtube.com"
 };
 
+const findUserIDByEmail = function(email) {
+  for (var ID in users){
+    if(users[ID].email === email){
+      return ID;
+    }
+  }
+  return -1;
+}
+
 app.get("/", (req, res) => {
   res.end("Hello");
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase, username: req.cookies.username };
+  let templateVars = { urls: urlDatabase, username: req.cookies.user_sessid };
   res.render("urls_index", templateVars);
 })
 
 app.get("/urls/new", (req, res) => {
+  const data = users[req.cookies.user_sessid];
+
+  debugger;
+
   let templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id],
-    username: req.cookies.username
+    username: users[req.cookies.user_sessid].email
      };
   res.render("urls_new", templateVars);
 });
@@ -74,7 +87,7 @@ app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id],
-    username: req.cookies.username
+    username: req.cookies.user_sessid
      };
   res.render("urls_show", templateVars)
 })
@@ -117,89 +130,55 @@ app.post("/urls/:id/update", (req, res) => {
   res.redirect("/urls")
 })
 
-app.post("/login", (req, res) =>{
-  res.cookie('username', req.body.username);
+app.post("/login", (req, res) => {
   //console.log('this', req.body.username);
-  let email = req.body.username;
-  if(users[email]){
-    console.log(users[email]);
-    if(req.body.password === users[email].password){
-      console.log("password matched");
-      res.redirect("/")
-    }
-    else{
-      console.log("password does not match");
-      res.status(403).send("The password you entered does not match.")
-    }
-  }
-  else{
-    console.log("user does not exist");
-    res.status(403).send("The email you entered does not match.")
+  const email = req.body.username;
+
+  // TODO: get ID of the email submitted above
+  const id = findUserIDByEmail(email);
+
+  if (id !== -1 && req.body.password === users[id].password) {
+      console.log(users[email]);
+      res.cookie('user_sessid', id);
+      return res.redirect("/");
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  //if(req.body.username){
-
-    //res.redirect("/urls/new")
-  //}
-  //else{
-    //res.status(403).send("The email you entered cannot be found. Try registering <a href='/register'> here. </a>")
-    //res.redirect("/login")
-  //}
-  //console.log(req.body.username + "****************************THIS ONE********************");
-
-
+  res.status(403).send("Invalid username or password.")
 })
 
 app.post("/logout", (req, res) => {
-res.clearCookie('username');
-res.redirect("/urls/new")
-})
+  res.clearCookie('user_sessid');
+  res.redirect("/login")
+});
 
 app.post("/register", (req, res) => {
   let userID = generateRandomString();
-  let userEMAIL = req.body.email;
-  let userPASSWORD = req.body.password;
-  if(userEMAIL === '' || userPASSWORD === ''){
+  let email = req.body.email;
+  let password = req.body.password;
+
+  const id = findUserIDByEmail(email);
+
+  // if the user did enter actual info in the register form
+  if(email === '' || password === ''){
     res.statusCode = 400;
     let message = {message: "email and/or password can't be empty. D'uh."}
-    res.render("urls_register", message);
+    return res.render("urls_register", message);
   }
-  else{
-     if(userEMAIL){
-       res.status(400).send("This email already exists. Try logging in <a href='/login'> here. </a>");
-       //res.render("/register")
-     }
-     res.redirect("/urls/new")
-   }
-  users[userEMAIL] = {
-    id: userID,
-    email: userEMAIL,
-    password: userPASSWORD
-  }
-  res.cookie("username", userEMAIL);
-  console.log(users);
 
-  res.redirect("/urls/new")
+  // check if the user already exists
+  if(id !== -1){
+    return res.status(400).send("This email already exists. Try logging in <a href='/login'> here. </a>");
+  }
+
+  users[userID] = {
+    id: userID,
+    email: email,
+    password: password
+  };
+
+  res.cookie("user_sessid", userID);
+
+  res.redirect("/urls/new");
 })
 
 app.listen(PORT, '0.0.0.0', () => {
