@@ -11,6 +11,8 @@ app.set("view engine", "ejs");
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
+const bcrypt = require('bcrypt');
+
 const alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g','h','i','j','k','l','m','n','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','1','2','3','4','5','6','7','8','9','0'];
 
 function generateRandomString() {
@@ -178,7 +180,8 @@ app.post("/login", (req, res) => {
   // TODO: get ID of the email submitted above
   const id = findUserIDByEmail(email);
 
-  if (id !== -1 && req.body.password === users[id].password) {
+
+  if (id !== -1 && (bcrypt.compareSync(req.body.password, users[id].password) === true)) {
       console.log(users[email]);
       res.cookie('userid', id);
       console.log(id);
@@ -199,6 +202,8 @@ app.post("/register", (req, res) => {
   let password = req.body.password;
   let links = [];
 
+const hashed_password = bcrypt.hashSync(password, 10);
+
   const id = findUserIDByEmail(email);
 
   // if the user did enter actual info in the register form
@@ -216,7 +221,7 @@ app.post("/register", (req, res) => {
   users[userID] = {
     id: userID,
     email: email,
-    password: password,
+    password: hashed_password,
     links: links
   };
 
