@@ -61,7 +61,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase, username: req.cookies["userid"] };
+  let templateVars = { urls: urlDatabase, username: users[req.cookies["userid"]] };
   if(req.cookies["userid"]){
         res.render("urls_index", templateVars);
       }
@@ -78,7 +78,7 @@ app.get("/urls/new", (req, res) => {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id],
     // username: users[req.cookies.userid].email
-    username: req.cookies["userid"]
+    username: users[req.cookies["userid"]]
      };
      res.render("urls_new", templateVars);
      // if(req.cookies["user_sessid"]){
@@ -93,7 +93,7 @@ app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id],
-    username: req.cookies.userid
+    username: users[req.cookies["userid"]]
      };
   res.render("urls_show", templateVars)
 })
@@ -134,7 +134,7 @@ app.post("/urls", (req, res) => {
      //urlDatabase[req.cookies["userid"]] = {randNum : longURL};
     let templateVars = {
       urls: [],
-      username: req.cookies.userid
+      username: users[req.cookies["userid"]]
     };
 
     console.log('heyyyyy you', users[req.cookies.userid]);
