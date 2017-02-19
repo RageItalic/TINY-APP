@@ -25,7 +25,6 @@ app.use(cookieParser())
 app.set("trust proxy", 1);
 app.set("view engine", "ejs");
 
-// Middleware //
 
 app.use(function (req, res, next) {
 
@@ -40,8 +39,6 @@ app.use(function (req, res, next) {
   next();
 });
 
-
-// Databases //
 
 const usersDatabase = {
   "af7656" : {
@@ -59,32 +56,27 @@ const urlsDatabase = {
 };
 
 
-///////////////    Routes     ///////////////
+
 
 app.get("/urls.json", (req, res) => {
   res.json(urlsDatabase);
 });
 
-// GET /
-// if user is logged in:
-// redirect -> /urls
-// if user is not logged in:
-// redirect -> /login
 
 app.get("/", function(req, res) {
-  if (!req.currentUser) {
+  if (!req.currentUser) {      //checks to see if the user is logged in or not.
     res.redirect("/login");
   } else {
-    res.redirect("/urls");
+    res.redirect("/urls");     //if he is, redirects to "/urls", if he isnt, redirects to login.
   }
 });
 
 app.get("/urls", function(req, res) { // working
   const currentUser = req.session.userID;
-  if (!req.currentUser) {
+  if (!req.currentUser) {      //if user is not logged in, returns 401 error.
     res.status(401);
     res.render("401");
-  } else {
+  } else {                      //if user is logged in, urls created by user with edit and delete button diplayed
     var currentUserURLs = {};
     for (var userID in urlsDatabase) {
         if (userID === req.currentUser.id) {
@@ -102,10 +94,10 @@ app.get("/urls", function(req, res) { // working
 
 
 app.get("/urls/new", function(req, res) {
-  if (!req.currentUser) {
+  if (!req.currentUser) {    //checks to see if user is logged in or not. If he/she isn't render 401 error page.
     res.status(401);
     res.render("401")
-  } else {
+  } else {                   //if he is, renders "urls_new"
     res.status(200);
     res.render("urls_new", {
       email: req.currentUser.email
@@ -116,12 +108,12 @@ app.get("/urls/new", function(req, res) {
 
 app.get("/urls/:shortURL", function(req, res) { // working
   console.log('get("/urls/:shortURL"', req.params.shortURL);
-  if (!req.currentUser) {
+  if (!req.currentUser) {      //checks to see if user is logged in or not. If he/she isn't render 401 error page.
     res.status(401);
     res.render("401");
   }
   for(let user in urlsDatabase) {
-    if(urlsDatabase[user][req.params.shortURL]) {
+    if(urlsDatabase[user][req.params.shortURL]) { // if everything is alright, renders page with all information.
       if(user === req.currentUser.id) {
         let shortURL = req.params.shortURL;
         var fullURL = urlsDatabase[req.currentUser.id][req.params.shortURL];
@@ -133,20 +125,20 @@ app.get("/urls/:shortURL", function(req, res) { // working
           hostname: req.get('host')
         };
         res.render("urls_show", templateVars)
-      } else {
+      } else {        //if logged in user does not match the "owner" of the url, renders 403 error.
         res.status(403);
         res.render("403");
       }
     }
   }
-  if (!fullURL) {
+  if (!fullURL) {     //if the url does not exist, returns 404 error
     res.status(404);
     res.render("404");
   }
 });
 
 app.get("/u/:id", function(req, res) {
-  for(let user in urlsDatabase) {
+  for(let user in urlsDatabase) {      //if url with correct id exists, then redirects to the long url.
       if(urlsDatabase[user][req.params.id]) {
         let longURL = urlsDatabase[req.currentUser.id][req.params.id]
         res.redirect(longURL);
@@ -155,7 +147,7 @@ app.get("/u/:id", function(req, res) {
         res.render("403")
       }
   }
-  res.status(404);
+  res.status(404);       //if url with correct id does not exist, renders 404 error page.
   res.render("404");
 
 });
@@ -176,12 +168,12 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.post("/urls", function(req, res) {
-  if (!req.currentUser) {
+  if (!req.currentUser) {    //if user is not logged in, redners 401 error page.
     res.status(401);
     res.render("401");
   }
 
-  let longURL = fixURL(req.body.longURL);
+  let longURL = fixURL(req.body.longURL);   //else generates shortURL, saves link and appends the longURL to it.
   let shortURL = generateRandomString();
   urlsDatabase[req.currentUser.id][shortURL] = longURL;
 
@@ -190,10 +182,10 @@ app.post("/urls", function(req, res) {
 
 app.get("/login", function(req, res) {
 
-  if (req.currentUser) {
+  if (req.currentUser) {   //if user is logged in, redirects to "/urls" page.
     res.redirect("/urls");
   } else {
-    res.status(200);
+    res.status(200);       //if he/she isnt logged in, renders login page
     res.render("login");
   }
 });
@@ -201,9 +193,9 @@ app.get("/login", function(req, res) {
 
 app.get("/register", function(req, res) {
 
-  if (req.currentUser) {
+  if (req.currentUser) {   //if user is logged in, redirects to "/urls" page.
     res.redirect("/urls");
-  } else {
+  } else {                   //is user is not logged in, the register page is rendered
     let templateVars = {
       email: req.session.userID
     };
@@ -213,10 +205,10 @@ app.get("/register", function(req, res) {
 });
 
 app.post("/register", function(req, res) { //working
-  if ((req.body.email === "") || (req.body.password === "")) {
+  if ((req.body.email === "") || (req.body.password === "")) {   //checks to see if email or password are empty/null.
     res.status(400);
     res.send("Either your password or your email isn't valid!");
-  } else {
+  } else {                                    //if they are not empty, checks to see if the email already exists
     for (let i in usersDatabase) {
       if (req.body.email === usersDatabase[i].email) {
         res.status(400);
@@ -224,7 +216,7 @@ app.post("/register", function(req, res) { //working
         return;
       }
     }
-
+      //if everything is good, registers a new user by generating a random id, and adding it to both database objects.
     let userID = generateRandomUserID();
     urlsDatabase[userID] = {};
     usersDatabase[userID] = {};
@@ -236,7 +228,7 @@ app.post("/register", function(req, res) { //working
 });
 
 
-app.post("/login", function(req, res) { //working
+app.post("/login", function(req, res) {
 
   let loginEmail = req.body.email;
   let loginPassword = req.body.password;
@@ -244,10 +236,11 @@ app.post("/login", function(req, res) { //working
   let user = null;
   for (let userId in usersDatabase) {
     let userCandidate = usersDatabase[userId];
-    if (userCandidate.email === loginEmail) {
+    if (userCandidate.email === loginEmail) {     //if email and password match existing user, sets cookie.
       user = userCandidate;
     }
   }
+  // if they dont match, redirects accordingly
 
   if (!user) { //user === null
     res.status(403).send("Incorrect email or password. Try registering.");
@@ -267,13 +260,13 @@ app.post("/login", function(req, res) { //working
 
 
 
-app.post("/logout", function(req, res) { //working
+app.post("/logout", function(req, res) {    //deletes cookie, redirects to login page
   req.session = null;
   res.clearCookie("userID");
   res.redirect("/login");
 });
 
-app.post("/urls/:id/delete", function(req, res) { //working
+app.post("/urls/:id/delete", function(req, res) {
   for (let key in usersDatabase) {
     if (usersDatabase[key].id !== req.currentUser.id) {
       res.status(403);
@@ -309,19 +302,19 @@ app.post("/urls/:id/edit", function(req, res) {
 
 app.post("/urls/:id", function(req, res) {
   console.log('post("/urls/:id"', req.params.id);
-  if (!req.currentUser) {
+  if (!req.currentUser) {   //if user isnt logged in, return 401
     res.status(401);
     res.render("401");
   }
-  if (req.params.id !== urlsDatabase[req.currentUser.id]) {
+  if (req.params.id !== urlsDatabase[req.currentUser.id]) {  //if url with id does not exist, returns 404
     res.status(404);
     res.render("404");
   }
-  if (urlsDatabase[req.currentUser.id]) {
+  if (urlsDatabase[req.currentUser.id]) {   //if everything is correct, updates url.
     let updatedURL = req.body.longURL;
     urlsDatabase[req.currentUser.id][req.params.id] = fixURL(updatedURL);
     res.redirect(`/urls/${req.params.id}`);
-  } else {
+  } else {                               //if user and url owner are not the same, returns 403
     res.status(403);
     res.render("403");
   }
