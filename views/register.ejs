@@ -1,0 +1,43 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+<body>
+<% var user_id = user_id; %>
+<% var email = email; %>
+<h3>Register NOW!</h3>
+<form method="POST" action="/register">
+  <input type="email" id="username" name="username"></input>
+  <br /> <br />
+  <input type="password" id="password" name="password"></input>
+  <input type="submit" value="Submit"></input>
+</form>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+<body>
+<% include partials/_header %>
+
+<main>
+
+<h4>Register NOW!</h4>
+  <form action="/register" method="post">
+    <label for="email">Email:</label>
+    <input id="email" type="email" name="email" placeholder="email" style="width: 150px">
+    <br>
+    <label for="password">Password:</label>
+    <input id="password" type="password" name="password" placeholder="password" style="width: 150px">
+    <br>
+    <input type="submit" value="Submit">
+  </form>
+
+
+</main>
+
+</body>
+</html>

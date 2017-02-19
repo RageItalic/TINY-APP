@@ -3,11 +3,13 @@
 <head>
 </head>
 <body>
+<% var user_id = user_id %>
+  <% var email = email; %>
 <h3> Login here, bud!</h3>
 <form method="POST" action="/login">
-  <input type="text" placeholder="username" name="username"></input>
+  <input type="email" id="username" placeholder="email" name="email"></input>
   <br /> <br />
-  <input type="password" placeholder="password" name="password"></input>
+  <input type="password" id ="password" placeholder="password" name="password"></input>
   <input type="submit" value="Submit"></input>
 </form>
 </body>

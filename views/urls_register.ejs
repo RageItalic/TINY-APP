@@ -3,14 +3,13 @@
 <head>
 </head>
 <body>
+<% var user_id = user_id; %>
+<% var email = email; %>
 <h3>Register NOW!</h3>
-<% if(message){ %>
-<p><%= message; %></p>
-<% } %>
 <form method="POST" action="/register">
-  <input type="email" placeholder="email" name="email"></input>
+  <input type="email" id="username" name="username"></input>
   <br /> <br />
-  <input type="password" placeholder="password" name="password"></input>
+  <input type="password" id="password" name="password"></input>
   <input type="submit" value="Submit"></input>
 </form>
 </body>

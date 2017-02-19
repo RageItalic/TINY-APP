@@ -1,17 +1,35 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
 </head>
 <body>
 <h1>Short.en</h1>
-<%  if (username){ %>
-<form method="POST" action="/logout">
-<input type="submit" value="Logout"></input>
-</form>
+<% if((typeof email !== 'undefined') &amp;&amp; (email.length > 3)) { %>
+  <%= email %>
+  <br>
+  <form method="POST" action="/logout">
+    <input type="submit" value="Logout">
+  </form>
+  <br>
 <% } else { %>
-<a href="/login">Login here</a>
-<a href="/register">Register here</a>
+  <a href="/register">REGISTER</a>
+  <a href="/login">LOGIN PAGE</a>
 <% } %>
-<%= username.email %>
 </body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<header>
+
+<h2>TinyApp</h2>
+
+<% if (!currentUser) { %>
+  <div class="logged-out"></div>
+<% } else { %>
+  <div class="logged-in">
+    <a href="/urls/new">Create</a>
+    <a href="/urls">Your URLs</a>
+  </div>
+<% } %>
+</header>
 </html>

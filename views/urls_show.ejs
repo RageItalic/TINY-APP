@@ -1,18 +1,46 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <title>TinyApp</title>
 </head>
 <body>
-    <%- include partials/_header.ejs %>
+    <% var username = user_id; %>
+    <%var email = email; %>
+    <% include partials/_header %>
     <h2>Your url and its shortened form:</h2>
     <ul>
-    <%= shortURL %> : <%= longURL%>
+    <%= shortUrl %> | <%= urls[shortUrl].url %> | <%= urls[shortUrl].date %>
     </ul>
     <form method="POST" action="/urls/<%= shortURL %>/update">
-      <input type = "text" name="longURL"></input>
+      <input id="newURL" type = "url" name="newURL" placeholder = ""<%= urls[shortUrl].url %>"">
+      </input>
       <input type ="submit" value="Edit"></input>
     </form>
-    <!-- Add your EJS code here -->
+    <! Add your EJS code here
+</body>
+</html> -->
+<html>
+<body>
+
+<% include partials/_header %>
+
+<main>
+
+  <h1><%= hostname %>/u/<%=shortURL%></a>  - <%= fullURL %></h1>
+  <% if (!fullURL) { %>
+    <p>&quot;<%= shortURL %>&quot;</p>
+    <% } else { %>
+    <% } %>
+  </h1>
+  <form action="/urls/<%= shortURL %>/edit" method="post">
+    <label for="longURL">Update URL:</label>
+      <input id="longURL" type="text" name="longURL" placeholder="http://" value="<%= fullURL %>" style="width: 300px">
+      <input type="submit" value="Submit">
+   </form>
+
+
+</main>
+
 </body>
 </html>
